@@ -1,39 +1,72 @@
 # Text to PDF Converter
 
-A simple Bash script that converts plain text files to PDF documents.
+A Python script that converts code or text files into syntax-highlighted PDF documents.
 
 ## Features
 
-- Converts any plain text file (.txt, .log, etc.) to PDF
-- Preserves the original filename (appends .pdf extension)
-- Lightweight and command-line friendly
-- Provides clear error messages for missing dependencies or files
+- **Syntax Highlighting** using [Pygments](https://pygments.org/) for various programming languages.
+- **Multiple Columns**: Use `--columns` to split the output into multiple columns.
+- **Customizable Styles**: Specify a color style with `--style` (any supported Pygments style).
+- **Headless Chrome**: Renders HTML to PDF, ensuring consistent appearance across platforms.
 
 ## Requirements
 
-- Linux/Unix environment
-- `enscript` (for text to PostScript conversion)
-- `ghostscript` (contains `ps2pdf` for PostScript to PDF conversion)
+- **Python 3+**, with the following Python libraries:
+    - `pygments`
+    - `get-chrome-paths`
+- **Chrome, Chromium, or Microsoft Edge**  
+   - A headless Chrome executable must be installed and discoverable.  
+   - If Chrome is not auto-detected, provide its path with `--chrome-path`.
+
+## Installation
+
+- Download or clone this repository.
+
+```
+git clone https://github.com/jifengwu2k/txt2pdf.git
+cd txt2pdf
+```
+
+- Install Chrome, Chromium, or Microsoft Edge if not already available.
+- Install Python 3+ if not already available.
+- Install Python packages using `pip` or your preferred installer:
+
+```
+pip install pygments get-chrome-paths
+```
+
+You can also use the bundled versions:
+
+```
+pip install --no-index --find-links=. pygments get-chrome-paths
+```
 
 ## Usage
 
-```bash
-# Convert single file
-bash txt2pdf.sh notes.txt
+```
+# Basic single-file conversion
+python txt2pdf.py file1.py
 
-# Convert multiple files
-bash txt2pdf.sh file1.txt file2.txt file3.log
+# Multiple files at once
+python txt2pdf.py script.sh code.c
 
-# Convert all text files in directory
-bash txt2pdf.sh *.txt
+# Specify columns
+python txt2pdf.py --columns=2 code.c
+
+# Override default syntax style (e.g., 'friendly')
+python txt2pdf.py --style=friendly script.sh
+
+# Specify a custom Chrome path (if auto-detection fails)
+python txt2pdf.py --chrome-path="/usr/bin/google-chrome" file1.py
 ```
 
 ## How It Works
 
-1. The script first validates the input file exists and is readable
-2. Uses `enscript` to convert the text file to PostScript format
-3. Pipes the output to `ps2pdf` to generate the final PDF
-4. Outputs success/failure messages with the resulting filename
+1. Read the Source File: The script reads each file's content.
+2. Apply Syntax Highlighting: Uses Pygments to convert code into HTML with inline styles.
+3. Generate Temporary HTML: Wraps the highlighted code in an HTML template and saves it to a temporary HTML file.
+4. Convert HTML to PDF: Launches headless Chrome (via the `--headless` flag) to produce a PDF, respecting multi-column CSS.
+5. Cleanup: Deletes any temporary HTML files upon completion. Logs successes and failures.
 
 ## License
 
